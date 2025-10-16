@@ -11,8 +11,8 @@ float x = 500, y = 500;
 float frequency = 1.0f;
 float amplitude = 70;
 
-Vector2 launchPosition = { 80.0f, 700.0f };  
-
+Vector2 launchPosition = { 80.0f, 700.0f }; 
+Rectangle Slingshot = { launchPosition.x - 100, launchPosition.y - 10, 100, 20 };
 
 //Add sliders for frequency, amplitude and fps
 
@@ -34,6 +34,7 @@ void draw() {
 
     DrawCircleV(launchPosition, 20, LIGHTGRAY);
 	DrawRectangle(0, GetScreenHeight()-20, GetScreenWidth(), 50, DARKGREEN);
+	DrawRectangleRec(Slingshot, BROWN);
 
 
 	/*DrawCircle(x, y, 60, RED);
