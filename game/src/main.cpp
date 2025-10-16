@@ -14,6 +14,7 @@ float amplitude = 70;
 Vector2 launchPosition = { 80.0f, 700.0f }; 
 Rectangle Slingshot = { launchPosition.x - 100, launchPosition.y - 10, 100, 20 };
 Vector2 birdVelocity = { 100.0f, -20.0f };
+Vector2 gravity = { 0.0f, 9.81f };
 
 //Add sliders for frequency, amplitude and fps
 
@@ -24,6 +25,7 @@ void update() {
 	x = x + (-sin(time * frequency)) * frequency * amplitude * dt;
 	y = y + (cos(time * frequency)) * frequency * amplitude * dt;
 
+	birdVelocity += gravity * dt;
 	launchPosition += birdVelocity * dt;
 }
 
