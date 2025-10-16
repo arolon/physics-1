@@ -13,8 +13,11 @@ float amplitude = 70;
 
 Vector2 launchPosition = { 80.0f, 700.0f }; 
 Rectangle Slingshot = { launchPosition.x - 100, launchPosition.y - 10, 100, 20 };
-Vector2 birdVelocity = { 100.0f, -20.0f };
+float launchSpeed = 100.0f;
+float launchAngle = 45.0f;
+Vector2 birdVelocity = Vector2Rotate(Vector2{ launchSpeed, 0 }, launchAngle) * launchSpeed;
 Vector2 gravity = { 0.0f, 9.81f };
+
 
 //Add sliders for frequency, amplitude and fps
 
@@ -40,6 +43,9 @@ void draw() {
     DrawCircleV(launchPosition, 20, LIGHTGRAY);
 	DrawRectangle(0, GetScreenHeight()-20, GetScreenWidth(), 50, DARKGREEN);
 	DrawRectangleRec(Slingshot, BROWN);
+
+	DrawText(TextFormat("Launch Angle: %.2f", launchAngle), 10, 50, 20, LIGHTGRAY);
+	DrawText(TextFormat("Launch Speed: %.2f", launchSpeed), 10, 80, 20, LIGHTGRAY);
 
 
 	/*DrawCircle(x, y, 60, RED);
