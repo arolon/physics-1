@@ -19,33 +19,49 @@ struct physicsWorld
     std::vector<birdObject> entities;
 };
 
-const unsigned int TARGET_FPS = 50;
+const unsigned int TARGET_FPS = 60;
 float time = 0;
 float dt;
-float x = 500, y = 500;
-float frequency = 1.0f;
-float amplitude = 70;
+//float x = 500, y = 500;
+//float frequency = 1.0f;
+//float amplitude = 70;
 
+physicsWorld world;
+
+float birdRadius = 10.0f;
+float launchSpeed = 100.0f;
+float launchAngle = 0.0f;
+float birdDrag = 1.0f;
+
+Vector2 initialLaunchPosition = { 80.0f, 700.0f };
 Vector2 launchPosition = { 80.0f, 700.0f }; 
 Rectangle Slingshot = { launchPosition.x - 100, launchPosition.y - 10, 100, 20 };
-float launchSpeed = 100.0f;
-float launchAngle = -45.0f;
-float worldGravity = 9.81f;
-Vector2 birdVelocity = Vector2Rotate(Vector2UnitX, launchAngle) * launchSpeed;
-Vector2 gravity = { 0.0f, worldGravity };
+Vector2 birdVelocity = { 0.0f, 0.0f };
+Vector2 previewVel = { 0.0f, 0.0f };
 
-
-//Add sliders for frequency, amplitude and fps
 
 void update() {
     dt = 1.0/TARGET_FPS;
     time += dt;
 
-	x = x + (-sin(time * frequency)) * frequency * amplitude * dt;
-	y = y + (cos(time * frequency)) * frequency * amplitude * dt;
+    
+    //launchPosition += birdVelocity * dt;
 
-    birdVelocity += gravity * dt;
-    launchPosition += birdVelocity * dt;
+    // Update launch velocity every frame in case of speed or angle change
+    birdVelocity = Vector2Rotate(Vector2UnitX, -launchAngle * DEG2RAD) * launchSpeed;
+    birdVelocity += world.gravity * dt;
+    birdDrag = Clamp(birdDrag, 0.0f, 1.0f);
+
+    previewVel.x = cosf(launchAngle * DEG2RAD) * launchSpeed;
+    previewVel.y = -sinf(launchAngle * DEG2RAD) * launchSpeed;
+
+    for (size_t i = 0; i < world.entities.size(); i++)
+    {
+        birdObject& e = world.entities[i];
+        e.velocity += world.gravity * dt;
+        e.velocity *= powf(e.drag, dt);
+        e.position += e.velocity * dt;
+    }
 }
 
 void draw() {
@@ -59,7 +75,7 @@ void draw() {
     //CONTROLS
     GuiSliderBar(Rectangle{ 30, 90, 500, 30 }, "Speed", TextFormat("Speed: %.0f", launchSpeed), &launchSpeed, -1000, 1000);
     GuiSliderBar(Rectangle{ 30, 110, 500, 30 }, "Angle", TextFormat("Angle: %.0f Degrees", launchAngle), &launchAngle, -180, 180);
-    GuiSliderBar(Rectangle{ 30, 130, 500, 30 }, "Gravity", TextFormat("Gravity: %.0f Px/sec^2", worldGravity), &worldGravity, -100, 100);
+    GuiSliderBar(Rectangle{ 30, 130, 500, 30 }, "Gravity", TextFormat("Gravity: %.0f Px/sec^2", world.gravity), &world.gravity.y, -100, 100);
 
 
     DrawCircleV(launchPosition, 20, LIGHTGRAY);
@@ -69,10 +85,13 @@ void draw() {
 	DrawText(TextFormat("Launch Angle: %.2f", launchAngle), 10, 50, 20, LIGHTGRAY);
 	DrawText(TextFormat("Launch Speed: %.2f", launchSpeed), 10, 70, 20, LIGHTGRAY);
 
+	// Draw all bird objects
+    for (const birdObject& e : world.entities)
+    {
+        DrawCircleV(e.position, birdRadius, RED);
+    }
 
-    //Line to show the shot
-    Vector2 previewVel = { cosf(launchAngle*DEG2RAD) * launchSpeed, -sinf(launchAngle * DEG2RAD) * launchSpeed };
-    float previewScale = 1.0f;
+    float previewScale = 0.5f;
     Vector2 previewTip = Vector2Add(launchPosition, Vector2Scale(previewVel, previewScale));
 
     // draw the preview vector (thin so it looks nice)
@@ -86,16 +105,18 @@ int main()
     InitWindow(InitialWidth, InitialHeight, "Physics Labs: Felipe Rolon 101538323");
     SetTargetFPS(TARGET_FPS);
 
-    bool shot = false;
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_SPACE))
+        {
+            birdObject bird;
+            bird.drag = birdDrag;
+            bird.position = initialLaunchPosition;
+            bird.velocity = birdVelocity;
+            world.entities.push_back(bird);
+        }
 		draw();
-        if (IsKeyDown(KEY_SPACE)) {
-            shot = !shot;
-        }
-        if (shot) {
-            update();
-        }
+        update();
 
     }
 
