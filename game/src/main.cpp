@@ -3,6 +3,21 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 #include "game.h"
+#include <vector>
+
+
+struct birdObject {
+	Vector2 position;
+	Vector2 velocity;
+    float drag = 1.0f;
+    float mass = 1.0f;
+};
+
+struct physicsWorld
+{
+    Vector2 gravity = { 0.0f, 9.81f };
+    std::vector<birdObject> entities;
+};
 
 const unsigned int TARGET_FPS = 50;
 float time = 0;
