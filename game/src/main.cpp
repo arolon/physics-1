@@ -14,6 +14,7 @@ struct birdObject {
 
     float radius = 10.0f;
     Color color = GREEN;
+	Color initColor = GREEN;
 };
 
 struct physicsWorld
@@ -62,7 +63,7 @@ void update() {
         bird.velocity += world.gravity * dt;
         bird.velocity *= powf(bird.drag, dt);
         bird.position += bird.velocity * dt;
-        bird.color = GREEN;
+		bird.color = bird.initColor;
     }
     for (size_t i = 0; i < world.entities.size(); i++)
     {
@@ -128,6 +129,13 @@ int main()
             bird.drag = birdDrag;
             bird.position = initialLaunchPosition;
             bird.velocity = previewVel;
+            bird.radius = float((rand() % 26) + 5);
+            bird.initColor = {
+                (unsigned char)(rand() % 256),
+                (unsigned char)(rand() % 256),
+                (unsigned char)(rand() % 256),
+                255
+            };
             world.entities.push_back(bird);
         }
 		draw();
