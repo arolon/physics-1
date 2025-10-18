@@ -11,6 +11,9 @@ struct birdObject {
 	Vector2 velocity;
     float drag = 1.0f;
     float mass = 1.0f;
+
+    float radius = 10.0f;
+    Color color = RED;
 };
 
 struct physicsWorld
@@ -22,9 +25,6 @@ struct physicsWorld
 const unsigned int TARGET_FPS = 60;
 float time = 0;
 float dt;
-//float x = 500, y = 500;
-//float frequency = 1.0f;
-//float amplitude = 70;
 
 physicsWorld world;
 
