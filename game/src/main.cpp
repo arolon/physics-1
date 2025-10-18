@@ -58,24 +58,22 @@ void update() {
 
     for (size_t i = 0; i < world.entities.size(); i++)
     {
-        birdObject& e = world.entities[i];
-        e.velocity += world.gravity * dt;
-        e.velocity *= powf(e.drag, dt);
-        e.position += e.velocity * dt;
-
+        birdObject& bird = world.entities[i];
+        bird.velocity += world.gravity * dt;
+        bird.velocity *= powf(bird.drag, dt);
+        bird.position += bird.velocity * dt;
+        bird.color = GREEN;
+    }
+    for (size_t i = 0; i < world.entities.size(); i++)
+    {
         for (size_t j = i + 1; j < world.entities.size(); ++j)
         {
-            birdObject& A = world.entities[i];
-            birdObject& B = world.entities[j];
-
-            if (isColliding(A, B))
+            birdObject& bird = world.entities[i];
+            birdObject& birdTwo = world.entities[j];
+            if (isColliding(bird, birdTwo))
             {
-                A.color = RED;
-                B.color = RED;
-            }
-            else {
-                A.color = GREEN;
-                B.color = GREEN;
+                bird.color = RED;
+                birdTwo.color = RED;
             }
         }
     }
