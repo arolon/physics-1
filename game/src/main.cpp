@@ -36,7 +36,6 @@ float birdDrag = 1.0f;
 Vector2 initialLaunchPosition = { 80.0f, 700.0f };
 Vector2 launchPosition = { 80.0f, 700.0f }; 
 Rectangle Slingshot = { launchPosition.x - 100, launchPosition.y - 10, 100, 20 };
-Vector2 birdVelocity = { 0.0f, 0.0f };
 Vector2 previewVel = { 0.0f, 0.0f };
 
 
@@ -44,12 +43,6 @@ void update() {
     dt = 1.0/TARGET_FPS;
     time += dt;
 
-    
-    //launchPosition += birdVelocity * dt;
-
-    // Update launch velocity every frame in case of speed or angle change
-    birdVelocity = Vector2Rotate(Vector2UnitX, -launchAngle * DEG2RAD) * launchSpeed;
-    birdVelocity += world.gravity * dt;
     birdDrag = Clamp(birdDrag, 0.0f, 1.0f);
 
     previewVel.x = cosf(launchAngle * DEG2RAD) * launchSpeed;
@@ -112,7 +105,7 @@ int main()
             birdObject bird;
             bird.drag = birdDrag;
             bird.position = initialLaunchPosition;
-            bird.velocity = birdVelocity;
+            bird.velocity = previewVel;
             world.entities.push_back(bird);
         }
 		draw();
