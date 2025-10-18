@@ -13,7 +13,7 @@ struct birdObject {
     float mass = 1.0f;
 
     float radius = 10.0f;
-    Color color = RED;
+    Color color = GREEN;
 };
 
 struct physicsWorld
@@ -22,13 +22,21 @@ struct physicsWorld
     std::vector<birdObject> entities;
 };
 
+// detect collisions function
+bool isColliding(const birdObject& a, const birdObject& b)
+{
+    float distance = Vector2Distance(a.position, b.position);
+    float radiusSum = a.radius + b.radius;
+    return distance <= radiusSum;
+}
+
 const unsigned int TARGET_FPS = 60;
 float time = 0;
 float dt;
 
 physicsWorld world;
 
-float birdRadius = 10.0f;
+//float birdRadius = 10.0f;
 float launchSpeed = 100.0f;
 float launchAngle = 0.0f;
 float birdDrag = 1.0f;
@@ -54,6 +62,22 @@ void update() {
         e.velocity += world.gravity * dt;
         e.velocity *= powf(e.drag, dt);
         e.position += e.velocity * dt;
+
+        for (size_t j = i + 1; j < world.entities.size(); ++j)
+        {
+            birdObject& A = world.entities[i];
+            birdObject& B = world.entities[j];
+
+            if (isColliding(A, B))
+            {
+                A.color = RED;
+                B.color = RED;
+            }
+            else {
+                A.color = GREEN;
+                B.color = GREEN;
+            }
+        }
     }
 }
 
@@ -81,7 +105,7 @@ void draw() {
 	// Draw all bird objects
     for (const birdObject& e : world.entities)
     {
-        DrawCircleV(e.position, birdRadius, RED);
+        DrawCircleV(e.position, e.radius, e.color);
     }
 
     float previewScale = 0.5f;
