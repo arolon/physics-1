@@ -17,6 +17,23 @@ struct birdObject {
 	Color initColor = GREEN;
 };
 
+struct halfSpace
+{
+    Vector2 position;
+    Vector2 normal = { 0, -1 };
+    float rotation = 0;
+
+    Color color = BLUE;
+    Color initColor = BLUE;
+
+    void SetRotation(float degrees)
+    {
+        rotation = degrees;
+        normal = Vector2Normalize(Vector2Rotate({ 0, -1 }, degrees * DEG2RAD));
+    }
+};
+
+
 struct physicsWorld
 {
     Vector2 gravity = { 0.0f, 9.81f };
@@ -36,6 +53,8 @@ float time = 0;
 float dt;
 
 physicsWorld world;
+halfSpace halfspace;
+
 
 //float birdRadius = 10.0f;
 float launchSpeed = 100.0f;
@@ -80,6 +99,37 @@ void update() {
     }
 }
 
+void drawHalfspace() {
+    // Draw circle
+    DrawCircleV(halfspace.position, 8, halfspace.color);
+
+    // Draw normal
+    DrawLineEx(
+        halfspace.position,
+        halfspace.position + halfspace.normal * 40,
+        3,
+        halfspace.color
+    );
+
+    Vector2 tangent = Vector2Rotate(halfspace.normal, PI * 0.5f);
+    DrawLineEx(
+        halfspace.position - tangent * 5000,
+        halfspace.position + tangent * 5000,
+        2,
+        halfspace.color
+    );
+
+    // Controls
+    GuiSliderBar({ 80, 200, 200, 20 }, "HX", TextFormat("%.0f", halfspace.position.x), &halfspace.position.x, 0, GetScreenWidth());
+    GuiSliderBar({ 80, 230, 200, 20 }, "HY", TextFormat("%.0f", halfspace.position.y), &halfspace.position.y, 0, GetScreenHeight());
+
+    float rot = halfspace.rotation;
+    GuiSliderBar({ 80, 260, 200, 20 }, "Rot", TextFormat("%.0f", rot), &rot, -360, 360);
+    halfspace.SetRotation(rot);
+
+}
+
+
 void draw() {
     BeginDrawing();
     ClearBackground(WHITE);
@@ -113,13 +163,18 @@ void draw() {
     // draw the preview vector (thin so it looks nice)
     DrawLineEx(launchPosition, previewTip, 4.0f, RED);
 
+	drawHalfspace();
+
     EndDrawing();
 }
+
 
 int main()
 {
     InitWindow(InitialWidth, InitialHeight, "Physics Labs: Felipe Rolon 101538323");
     SetTargetFPS(TARGET_FPS);
+    halfspace.position = { 500, 600 };
+    halfspace.SetRotation(0);
 
     while (!WindowShouldClose())
     {
